@@ -3,8 +3,10 @@ const router = new Router()
 const itemController = require('../controllers/itemController')
 
 router.post('/', itemController.create)
+router.post('/update', itemController.update)
 router.post('/forall', itemController.createForAll)
 router.post('/forchosen', itemController.createForChosen)
 router.get('/forstep', itemController.getForStep)
+router.delete('/', itemController.deleteItem)
 
 module.exports = router
