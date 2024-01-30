@@ -140,7 +140,12 @@ class ItemController {
                 paid_non_cash_divided = paid_non_cash / objects.length
                 paid_non_cash_divided = paid_non_cash_divided.toFixed(2)
             }
-            const steps = await Step.findAll({ where: { number: step_num } })
+            const steps = await Step.findAll({ 
+                where: { 
+                    number: step_num,
+                    object_id: {[Sequelize.Op.in]: objects_arr}
+                } 
+            })
             let items = []
             for (let i of steps) {
                 const item = await Item.create({ name, total: total_divided, total_non_cash: total_non_cash_divided, paid_cash: paid_cash_divided, paid_non_cash: paid_non_cash_divided, step_id: i.step_id, is_work })
