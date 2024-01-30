@@ -167,6 +167,32 @@ class ItemController {
         }
     }
 
+    async getBySearch(req, res, next) {
+        try {
+            const { search } = req.query
+            const items = await Item.findAll({ where: { name: {[Sequelize.Op.like]: `%${search}%`} } })
+            const steps = await Step.findAll({
+                where: {
+                    step_id : {[Sequelize.Op.in]: items.map(item => item.step_id)}
+                }
+            })
+            console.log(steps)
+            const objects = await Object.findAll({ 
+                where: { 
+                    // name: {[Sequelize.Op.like]: `%${search}%`},
+                    // object_id : {[Sequelize.Op.in]: steps.map(step => step.object_id)}
+                    [Sequelize.Op.or]: [
+                        { name: { [Sequelize.Op.like]: `%${search}%` } },
+                        { object_id: { [Sequelize.Op.in]: steps.map(step => step.object_id) } }
+                    ]
+                } 
+            })
+            return res.json(objects)
+        } catch (e) {
+            return next(ApiError.badRequest(e))
+        }
+    }
+
     async getForStep(req, res, next) {
         try {
             const { step_id } = req.query
