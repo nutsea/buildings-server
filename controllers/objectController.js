@@ -30,7 +30,30 @@ class ObjectController {
     async getAll(req, res, next) {
         try {
             const objects = await Object.findAll()
-            return res.json(objects)
+            let newObjects = []
+            for (let i of objects) {
+                const steps = await Step.findAll({where: {object_id: i.object_id}})
+                let objectTmp = {
+                    object_id: i.object_id,
+                    name: i.name,
+                    total: i.total,
+                    total_non_cash: i.total_non_cash,
+                    floor: i.floor,
+                    paid_cash: 0,
+                    paid_non_cash: 0
+                }
+                let paid_cash = 0
+                let paid_non_cash = 0
+                for (let j of steps) {
+                    paid_cash += j.paid_cash
+                    paid_non_cash += j.paid_non_cash
+                }
+                objectTmp.paid_cash = paid_cash
+                objectTmp.paid_non_cash = paid_non_cash
+                newObjects.push(objectTmp)
+                console.log(objectTmp)
+            }
+            return res.json(newObjects)
         } catch (e) {
             return next(ApiError.badRequest(e))
         }
