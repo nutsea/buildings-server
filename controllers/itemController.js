@@ -176,7 +176,6 @@ class ItemController {
                     step_id : {[Sequelize.Op.in]: items.map(item => item.step_id)}
                 }
             })
-            console.log(steps)
             const objects = await Object.findAll({ 
                 where: { 
                     [Sequelize.Op.or]: [
@@ -195,7 +194,8 @@ class ItemController {
                     total_non_cash: i.total_non_cash,
                     floor: i.floor,
                     paid_cash: 0,
-                    paid_non_cash: 0
+                    paid_non_cash: 0,
+                    createdAt: i.createdAt
                 }
                 let paid_cash = 0
                 let paid_non_cash = 0
@@ -206,7 +206,6 @@ class ItemController {
                 objectTmp.paid_cash = paid_cash
                 objectTmp.paid_non_cash = paid_non_cash
                 newObjects.push(objectTmp)
-                console.log(objectTmp)
             }
             return res.json(newObjects)
         } catch (e) {
